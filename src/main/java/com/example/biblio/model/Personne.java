@@ -1,13 +1,24 @@
 package com.example.biblio.model;
 
-public class Personne {
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
 
+@MappedSuperclass
+public abstract class Personne {
+
+    @Column(nullable = false)
     private String nom;
+
+    @Column(nullable = false)
     private String prenom;
+
+    @Column(unique = true, nullable = false)
     private String email;
+
     private String telephone;
 
-    // constructeur
+    public Personne() {}
+
     public Personne(String nom, String prenom, String email, String telephone) {
         this.nom = nom;
         this.prenom = prenom;
@@ -15,7 +26,8 @@ public class Personne {
         this.telephone = telephone;
     }
 
-    // getters & setters
+    // ================= GETTERS & SETTERS =================
+
     public String getNom() {
         return nom;
     }
@@ -47,14 +59,5 @@ public class Personne {
     public void setTelephone(String telephone) {
         this.telephone = telephone;
     }
-
-    @Override
-    public String toString() {
-        return "Personne{" +
-                "nom='" + nom + '\'' +
-                ", prenom='" + prenom + '\'' +
-                ", email='" + email + '\'' +
-                ", telephone='" + telephone + '\'' +
-                '}';
-    }
 }
+
