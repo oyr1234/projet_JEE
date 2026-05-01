@@ -2,9 +2,10 @@ package com.example.biblio.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -20,12 +21,11 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        System.out.println("=== SECURITY CONFIG LOADED ===");
-
-        http
+        return http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> {})
 
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -33,18 +33,27 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers("/auth/login").permitAll()
-                        .requestMatchers("/auth/register/user").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
+                        // public endpoints
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/error").permitAll()
 
-                        .requestMatchers("/auth/register/admin").hasRole("ADMIN")
-                        .requestMatchers("/auth/register/bibliothecaire").hasRole("ADMIN")
+                        // roles (IMPORTANT: use ROLE_)
+                        .requestMatchers("/admins/**").hasRole("ADMIN")
+                        .requestMatchers("/bibliothecaires/**").hasRole("BIBLIOTHECAIRE")
+                        .requestMatchers("/users/**").hasRole("USER")
 
                         .anyRequest().authenticated()
                 )
 
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                // 🔥 CRITICAL FIX
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 
-        return http.build();
+                .build();
+    }
+
+    // 🔥 REQUIRED FOR LOGIN
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 }
