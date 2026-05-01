@@ -26,4 +26,24 @@ public class LivreService {
     public void delete(Long id) {
         repository.deleteById(id);
     }
+
+    public List<Livre> searchByTitre(String titre) {
+        return repository.findByTitreContainingIgnoreCase(titre);
+    }
+
+    public List<Livre> searchByAuteur(String auteur) {
+        return repository.findByAuteurContainingIgnoreCase(auteur);
+    }
+
+    public List<Livre> searchByCategory(String category) {
+        return repository.findByCategoryNom(category);
+    }
+
+    public List<Livre> availableBooks() {
+        return repository.findByDisponible(true);
+    }
+
+    public List<Livre> lowStockBooks() {
+        return repository.findByQuantiteLessThan(3);
+    }
 }

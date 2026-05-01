@@ -3,28 +3,28 @@ package com.example.biblio.model;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "bibliothecaires")
+@PrimaryKeyJoinColumn(name = "id")
 public class Bibliothecaire extends Personne {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     private String matricule;
+
     private double salaire;
 
-    public Bibliothecaire() {}
+    private boolean enabled = true;
 
-    public Bibliothecaire(String nom, String prenom, String email, String telephone,
-                          String matricule, double salaire) {
-        super(nom, prenom, email, telephone);
-        this.matricule = matricule;
-        this.salaire = salaire;
+    public Bibliothecaire() {
+        super();
     }
 
-    // ===== GETTERS & SETTERS =====
+    public Bibliothecaire(String nom, String prenom, String email,
+                          String telephone, String matricule,
+                          double salaire, String motDePasse) {
 
-    public Long getId() {
-        return id;
+        super(nom, prenom, email, telephone, motDePasse);
+
+        this.matricule = matricule;
+        this.salaire = salaire;
     }
 
     public String getMatricule() {
@@ -41,5 +41,13 @@ public class Bibliothecaire extends Personne {
 
     public void setSalaire(double salaire) {
         this.salaire = salaire;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
     }
 }

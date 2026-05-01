@@ -30,4 +30,34 @@ public class LivreController {
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }
+
+    // SEARCH BY TITLE
+    @GetMapping("/search/title")
+    public List<Livre> searchByTitre(@RequestParam String titre) {
+        return service.searchByTitre(titre);
+    }
+
+    // SEARCH BY AUTHOR
+    @GetMapping("/search/auteur")
+    public List<Livre> searchByAuteur(@RequestParam String auteur) {
+        return service.searchByAuteur(auteur);
+    }
+
+    // FILTER BY CATEGORY
+    @GetMapping("/category")
+    public List<Livre> searchByCategory(@RequestParam String nom) {
+        return service.searchByCategory(nom);
+    }
+
+    // AVAILABLE BOOKS
+    @GetMapping("/available")
+    public List<Livre> availableBooks() {
+        return service.availableBooks();
+    }
+
+    // LOW STOCK ALERT
+    @GetMapping("/low-stock")
+    public List<Livre> lowStockBooks() {
+        return service.lowStockBooks();
+    }
 }

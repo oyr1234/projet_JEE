@@ -1,10 +1,15 @@
 package com.example.biblio.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 
-@MappedSuperclass
+@Entity
+@Table(name = "personnes")
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Personne {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false)
     private String nom;
@@ -17,16 +22,31 @@ public abstract class Personne {
 
     private String telephone;
 
+    @Column(nullable = false)
+    private String motDePasse;
+
+    // ✅ ROLE FIX (IMPORTANT)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.USER;
+
     public Personne() {}
 
-    public Personne(String nom, String prenom, String email, String telephone) {
+    public Personne(String nom, String prenom, String email,
+                    String telephone, String motDePasse) {
         this.nom = nom;
         this.prenom = prenom;
         this.email = email;
         this.telephone = telephone;
+        this.motDePasse = motDePasse;
+        this.role = Role.USER; // safety default
     }
 
-    // ================= GETTERS & SETTERS =================
+    // getters & setters
+
+    public Long getId() {
+        return id;
+    }
 
     public String getNom() {
         return nom;
@@ -59,5 +79,20 @@ public abstract class Personne {
     public void setTelephone(String telephone) {
         this.telephone = telephone;
     }
-}
 
+    public String getMotDePasse() {
+        return motDePasse;
+    }
+
+    public void setMotDePasse(String motDePasse) {
+        this.motDePasse = motDePasse;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+}

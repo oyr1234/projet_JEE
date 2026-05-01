@@ -16,26 +16,45 @@ public class EmpruntController {
         this.service = service;
     }
 
-    // demander emprunt
+    // USER request borrow
     @PostMapping("/{livreId}")
     public Emprunt create(@PathVariable Long livreId) {
         return service.create(livreId);
     }
 
-    // valider
+    // BIBLIOTHECAIRE validates
     @PutMapping("/valider/{id}")
     public Emprunt valider(@PathVariable Long id) {
         return service.valider(id);
     }
 
-    // retour
+    // Return book
     @PutMapping("/retour/{id}")
     public Emprunt retour(@PathVariable Long id) {
         return service.retour(id);
     }
 
+    // All emprunts
     @GetMapping
     public List<Emprunt> getAll() {
         return service.getAll();
+    }
+
+    // Pending validation
+    @GetMapping("/pending")
+    public List<Emprunt> pendingRequests() {
+        return service.pendingRequests();
+    }
+
+    // Returned books
+    @GetMapping("/returned")
+    public List<Emprunt> returnedBooks() {
+        return service.returnedBooks();
+    }
+
+    // Overdue books
+    @GetMapping("/overdue")
+    public List<Emprunt> overdueBooks() {
+        return service.overdueBooks();
     }
 }

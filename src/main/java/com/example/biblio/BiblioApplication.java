@@ -1,12 +1,13 @@
 package com.example.biblio;
 
-
+import com.example.biblio.model.Livre;
+import com.example.biblio.repository.LivreRepository;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-@EnableJpaRepositories(basePackages = "com.example.biblio.repository")
 public class BiblioApplication {
 
     public static void main(String[] args) {
