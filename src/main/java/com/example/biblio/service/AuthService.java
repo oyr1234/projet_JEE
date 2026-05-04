@@ -43,7 +43,13 @@ public class AuthService {
             Bibliothecaire bib = new Bibliothecaire();
             bib.setMatricule(request.getMatricule());
             bib.setSalaire(request.getSalaire());
+            bib.setRole(Role.BIBLIOTHECAIRE); // ✅ FIXED
             user = bib;
+
+        } else if ("ADMIN".equals(role)) {
+
+            user = new User();
+            user.setRole(Role.ADMIN);         // ✅ FIXED
 
         } else {
 

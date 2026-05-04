@@ -4,9 +4,11 @@ import com.example.biblio.dto.PersonneRequest;
 import com.example.biblio.dto.PersonneResponse;
 import com.example.biblio.model.Role;
 import com.example.biblio.model.User;
+import com.example.biblio.repository.EmpruntRepository;
 import com.example.biblio.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,11 +17,14 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmpruntRepository empruntRepository; // ✅ ADDED
 
     public UserService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder) {
+                       PasswordEncoder passwordEncoder,
+                       EmpruntRepository empruntRepository) { // ✅ ADDED
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.empruntRepository = empruntRepository; // ✅ ADDED
     }
 
     // =========================
@@ -50,12 +55,14 @@ public class UserService {
         user.setPrenom(request.getPrenom());
         user.setEmail(request.getEmail());
         user.setTelephone(request.getTelephone());
-
-        // 🔥 IMPORTANT: encode password
         user.setMotDePasse(passwordEncoder.encode(request.getMotDePasse()));
 
-        // 🔥 IMPORTANT: default role
-        user.setRole(Role.USER);
+        // ✅ respect role from request, default to USER
+        if (request.getRole() != null && !request.getRole().isEmpty()) {
+            user.setRole(Role.valueOf(request.getRole().toUpperCase()));
+        } else {
+            user.setRole(Role.USER);
+        }
 
         return user;
     }
@@ -107,9 +114,15 @@ public class UserService {
     }
 
     // =========================
-    // DELETE USER
+    // DELETE USER ✅ FIXED
     // =========================
+    @Transactional
     public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+        userRepository.findById(id).ifPresent(user -> {
+            empruntRepository.deleteAll(
+                    empruntRepository.findByUser(user) // delete loans first
+            );
+            userRepository.delete(user); // then delete user
+        });
     }
 }
