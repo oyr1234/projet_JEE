@@ -2,8 +2,11 @@ package com.example.biblio.service;
 
 import com.example.biblio.model.Emprunt;
 import com.example.biblio.model.Livre;
+import com.example.biblio.model.User;
 import com.example.biblio.repository.EmpruntRepository;
 import com.example.biblio.repository.LivreRepository;
+import com.example.biblio.repository.UserRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -14,13 +17,16 @@ public class EmpruntService {
 
     private final EmpruntRepository empruntRepo;
     private final LivreRepository livreRepo;
+    private final UserRepository userRepo;
 
     public EmpruntService(
             EmpruntRepository empruntRepo,
-            LivreRepository livreRepo
+            LivreRepository livreRepo,
+            UserRepository userRepo
     ) {
         this.empruntRepo = empruntRepo;
         this.livreRepo = livreRepo;
+        this.userRepo = userRepo;
     }
 
     // USER requests borrow
@@ -28,63 +34,42 @@ public class EmpruntService {
         Livre livre = livreRepo.findById(livreId)
                 .orElseThrow(() -> new RuntimeException("Livre introuvable"));
 
-        return empruntRepo.save(
-                new Emprunt(LocalDate.now(), livre)
-        );
+        // get current logged-in user from security context
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+
+        User user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User introuvable"));
+
+        Emprunt emprunt = new Emprunt(LocalDate.now(), livre, user);
+        return empruntRepo.save(emprunt);
     }
 
-    // BIBLIOTHECAIRE validates borrow
     public Emprunt valider(Long id) {
-        Emprunt e = empruntRepo.findById(id)
+        Emprunt emprunt = empruntRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Emprunt introuvable"));
 
-        Livre l = e.getLivre();
-
-        if (l.getQuantite() <= 0) {
-            throw new RuntimeException("Livre non disponible");
-        }
-
-        l.setQuantite(l.getQuantite() - 1);
-        livreRepo.save(l);
-
-        e.setValide(true);
-
-        return empruntRepo.save(e);
+        emprunt.setValide(true);
+        return empruntRepo.save(emprunt);
     }
 
-    // Return book
     public Emprunt retour(Long id) {
-        Emprunt e = empruntRepo.findById(id)
+        Emprunt emprunt = empruntRepo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Emprunt introuvable"));
 
-        Livre l = e.getLivre();
+        emprunt.setRetourne(true);
+        emprunt.setDateRetour(LocalDate.now());
 
-        l.setQuantite(l.getQuantite() + 1);
-        livreRepo.save(l);
-
-        e.setDateRetour(LocalDate.now());
-        e.setRetourne(true);
-
-        if (LocalDate.now().isAfter(e.getDateLimiteRetour())) {
-            e.setEnRetard(true);
+        if (LocalDate.now().isAfter(emprunt.getDateLimiteRetour())) {
+            emprunt.setEnRetard(true);
         }
 
-        return empruntRepo.save(e);
+        return empruntRepo.save(emprunt);
     }
 
     public List<Emprunt> getAll() {
         return empruntRepo.findAll();
     }
 
-    public List<Emprunt> pendingRequests() {
-        return empruntRepo.findByValide(false);
-    }
-
-    public List<Emprunt> returnedBooks() {
-        return empruntRepo.findByRetourne(true);
-    }
-
-    public List<Emprunt> overdueBooks() {
-        return empruntRepo.findByEnRetard(true);
-    }
 }

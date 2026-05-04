@@ -13,27 +13,26 @@ public class Emprunt {
 
     private LocalDate dateEmprunt;
     private LocalDate dateRetour;
-
-    // validation by bibliothecaire
     private boolean valide = false;
-
-    // returned or not
     private boolean retourne = false;
-
-    // due date = borrow + 14 days
     private LocalDate dateLimiteRetour;
-
-    // overdue penalty flag
     private boolean enRetard = false;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "livre_id")
     private Livre livre;
 
-    public Emprunt() {}
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    public Emprunt(LocalDate dateEmprunt, Livre livre) {
+    public Emprunt() {
+    }
+
+    public Emprunt(LocalDate dateEmprunt, Livre livre, User user) {
         this.dateEmprunt = dateEmprunt;
         this.livre = livre;
+        this.user = user;
         this.valide = false;
         this.retourne = false;
         this.dateLimiteRetour = dateEmprunt.plusDays(14);
@@ -41,6 +40,10 @@ public class Emprunt {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public LocalDate getDateEmprunt() {
@@ -97,5 +100,13 @@ public class Emprunt {
 
     public void setLivre(Livre livre) {
         this.livre = livre;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

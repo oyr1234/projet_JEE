@@ -5,36 +5,54 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "users")
-@PrimaryKeyJoinColumn(name = "id")
-public class User extends Personne {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "dtype", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue("USER") // ✅ ADD THIS
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String nom;
+    private String prenom;
+
+    @Column(unique = true)
+    private String email;
+
+    private String telephone;
+    private String motDePasse;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     private boolean enabled = true;
-
     private LocalDate dateInscription = LocalDate.now();
 
-    public User() {
-        super();
-    }
+    // ===== GETTERS & SETTERS =====
+    public Long getId() { return id; }
 
-    public User(String nom, String prenom, String email,
-                String telephone, String motDePasse) {
-        super(nom, prenom, email, telephone, motDePasse);
-        this.dateInscription = LocalDate.now();
-    }
+    public String getNom() { return nom; }
+    public void setNom(String nom) { this.nom = nom; }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
+    public String getPrenom() { return prenom; }
+    public void setPrenom(String prenom) { this.prenom = prenom; }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public LocalDate getDateInscription() {
-        return dateInscription;
-    }
+    public String getTelephone() { return telephone; }
+    public void setTelephone(String telephone) { this.telephone = telephone; }
 
-    public void setDateInscription(LocalDate dateInscription) {
-        this.dateInscription = dateInscription;
-    }
+    public String getMotDePasse() { return motDePasse; }
+    public void setMotDePasse(String motDePasse) { this.motDePasse = motDePasse; }
+
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
+
+    public boolean isEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
+
+    public LocalDate getDateInscription() { return dateInscription; }
+    public void setDateInscription(LocalDate dateInscription) { this.dateInscription = dateInscription; }
 }

@@ -17,8 +17,7 @@ public class Livre {
     private int quantite;
     private boolean disponible = true;
 
-    // NEW CATEGORY RELATION
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "category_id")
     private Category category;
 
@@ -39,64 +38,29 @@ public class Livre {
         return disponible && quantite > 0;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
 
-    public String getTitre() {
-        return titre;
-    }
+    public String getTitre() { return titre; }
+    public void setTitre(String titre) { this.titre = titre; }
 
-    public void setTitre(String titre) {
-        this.titre = titre;
-    }
+    public String getAuteur() { return auteur; }
+    public void setAuteur(String auteur) { this.auteur = auteur; }
 
-    public String getAuteur() {
-        return auteur;
-    }
+    public String getIsbn() { return isbn; }
+    public void setIsbn(String isbn) { this.isbn = isbn; }
 
-    public void setAuteur(String auteur) {
-        this.auteur = auteur;
-    }
+    public int getAnnee() { return annee; }
+    public void setAnnee(int annee) { this.annee = annee; }
 
-    public String getIsbn() {
-        return isbn;
-    }
-
-    public void setIsbn(String isbn) {
-        this.isbn = isbn;
-    }
-
-    public int getAnnee() {
-        return annee;
-    }
-
-    public void setAnnee(int annee) {
-        this.annee = annee;
-    }
-
-    public int getQuantite() {
-        return quantite;
-    }
-
+    public int getQuantite() { return quantite; }
     public void setQuantite(int quantite) {
         this.quantite = quantite;
         this.disponible = quantite > 0;
     }
 
-    public boolean isDisponible() {
-        return disponible;
-    }
+    public boolean isDisponible() { return disponible; }
+    public void setDisponible(boolean disponible) { this.disponible = disponible; }
 
-    public void setDisponible(boolean disponible) {
-        this.disponible = disponible;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
+    public Category getCategory() { return category; }
+    public void setCategory(Category category) { this.category = category; }
 }

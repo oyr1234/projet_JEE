@@ -42,20 +42,19 @@
         }
 
         // Pending validation
-        @GetMapping("/pending")
-        public List<Emprunt> pendingRequests() {
-            return service.pendingRequests();
+        //@GetMapping("/pending")
+        //public List<Emprunt> pendingRequests() {
+           // return service.pendingRequests();
         }
 
-        // Returned books
-        @GetMapping("/returned")
-        public List<Emprunt> returnedBooks() {
-            return service.returnedBooks();
-        }
-
-        // Overdue books
-        @GetMapping("/overdue")
-        public List<Emprunt> overdueBooks() {
-            return service.overdueBooks();
-        }
-    }
+//        // Returned books
+//        @GetMapping("/returned")
+//        public List<Emprunt> returnedBooks() {
+//            return service.returnedBooks();
+//        }
+//
+//        // Overdue books
+//        @GetMapping("/overdue")
+//        public List<Emprunt> overdueBooks() {
+//            return service.overdueBooks();
+//

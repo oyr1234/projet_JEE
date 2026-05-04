@@ -2,6 +2,7 @@ package com.example.biblio.controller;
 
 import com.example.biblio.model.Livre;
 import com.example.biblio.service.LivreService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,48 +18,54 @@ public class LivreController {
         this.service = service;
     }
 
-    @PostMapping
-    public Livre create(@RequestBody Livre l) {
-        return service.save(l);
+    @PostMapping("/add")
+    public ResponseEntity<Livre> create(@RequestBody Livre l) {
+        return ResponseEntity.ok(service.save(l));
     }
 
     @GetMapping
-    public List<Livre> getAll() {
-        return service.getAll();
+    public ResponseEntity<List<Livre>> getAll() {
+        return ResponseEntity.ok(service.getAll());
     }
 
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
+    @GetMapping("/{id}")
+    public ResponseEntity<Livre> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.getById(id));
+    }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Livre> update(@PathVariable Long id, @RequestBody Livre l) {
+        return ResponseEntity.ok(service.update(id, l));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> delete(@PathVariable Long id) {
         service.delete(id);
+        return ResponseEntity.ok("Deleted");
     }
 
-    // SEARCH BY TITLE
     @GetMapping("/search/title")
-    public List<Livre> searchByTitre(@RequestParam String titre) {
-        return service.searchByTitre(titre);
+    public ResponseEntity<List<Livre>> searchByTitre(@RequestParam String titre) {
+        return ResponseEntity.ok(service.searchByTitre(titre));
     }
 
-    // SEARCH BY AUTHOR
     @GetMapping("/search/auteur")
-    public List<Livre> searchByAuteur(@RequestParam String auteur) {
-        return service.searchByAuteur(auteur);
+    public ResponseEntity<List<Livre>> searchByAuteur(@RequestParam String auteur) {
+        return ResponseEntity.ok(service.searchByAuteur(auteur));
     }
 
-    // FILTER BY CATEGORY
     @GetMapping("/category")
-    public List<Livre> searchByCategory(@RequestParam String nom) {
-        return service.searchByCategory(nom);
+    public ResponseEntity<List<Livre>> searchByCategory(@RequestParam String nom) {
+        return ResponseEntity.ok(service.searchByCategory(nom));
     }
 
-    // AVAILABLE BOOKS
     @GetMapping("/available")
-    public List<Livre> availableBooks() {
-        return service.availableBooks();
+    public ResponseEntity<List<Livre>> availableBooks() {
+        return ResponseEntity.ok(service.availableBooks());
     }
 
-    // LOW STOCK ALERT
     @GetMapping("/low-stock")
-    public List<Livre> lowStockBooks() {
-        return service.lowStockBooks();
+    public ResponseEntity<List<Livre>> lowStockBooks() {
+        return ResponseEntity.ok(service.lowStockBooks());
     }
 }

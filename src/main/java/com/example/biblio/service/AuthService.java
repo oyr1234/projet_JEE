@@ -3,9 +3,10 @@ package com.example.biblio.service;
 import com.example.biblio.dto.LoginRequest;
 import com.example.biblio.dto.LoginResponse;
 import com.example.biblio.dto.PersonneRequest;
-import com.example.biblio.dto.PersonneResponse;
-import com.example.biblio.model.*;
-import com.example.biblio.repository.*;
+import com.example.biblio.model.Bibliothecaire;
+import com.example.biblio.model.Role;
+import com.example.biblio.model.User;
+import com.example.biblio.repository.UserRepository;
 import com.example.biblio.security.JwtUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,133 +14,50 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthService {
 
-    private final PersonneRepository personneRepository;
     private final UserRepository userRepository;
-    private final AdminRepository adminRepository;
-    private final BibliothecaireRepository bibliothecaireRepository;
-    private final JwtUtils jwtUtil;
+    private final JwtUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
 
-    public AuthService(PersonneRepository personneRepository,
-                       UserRepository userRepository,
-                       AdminRepository adminRepository,
-                       BibliothecaireRepository bibliothecaireRepository,
-                       JwtUtils jwtUtil,
+    public AuthService(UserRepository userRepository,
+                       JwtUtils jwtUtils,
                        PasswordEncoder passwordEncoder) {
-
-        this.personneRepository = personneRepository;
         this.userRepository = userRepository;
-        this.adminRepository = adminRepository;
-        this.bibliothecaireRepository = bibliothecaireRepository;
-        this.jwtUtil = jwtUtil;
+        this.jwtUtils = jwtUtils;
         this.passwordEncoder = passwordEncoder;
     }
 
-    // =========================
-    // REGISTER USER
-    // =========================
-    public PersonneResponse registerUser(PersonneRequest request) {
+    public User register(PersonneRequest request) {
 
-        if (personneRepository.findByEmail(request.getEmail()).isPresent()) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("Email already exists");
         }
 
-        User saved = userRepository.save(new User(
-                request.getNom(),
-                request.getPrenom(),
-                request.getEmail(),
-                request.getTelephone(),
-                passwordEncoder.encode(request.getMotDePasse())
-        ));
+        User user;
 
-        // ✅ ROLE FIX
-        saved.setRole(Role.USER);
-        userRepository.save(saved);
+        String role = (request.getRole() == null)
+                ? "USER"
+                : request.getRole().toUpperCase();
 
-        return new PersonneResponse(
-                saved.getId(),
-                saved.getNom(),
-                saved.getPrenom(),
-                saved.getEmail(),
-                saved.getTelephone(),
-                saved.getRole().name(),
-                saved.isEnabled(),
-                saved.getDateInscription(),
-                null,
-                null
-        );
-    }
+        if ("BIBLIOTHECAIRE".equals(role)) {
 
-    // =========================
-    // REGISTER ADMIN
-    // =========================
-    public PersonneResponse registerAdmin(PersonneRequest request) {
+            Bibliothecaire bib = new Bibliothecaire();
+            bib.setMatricule(request.getMatricule());
+            bib.setSalaire(request.getSalaire());
+            user = bib;
 
-        if (personneRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists");
+        } else {
+
+            user = new User();
+            user.setRole(Role.USER);
         }
 
-        Admin saved = adminRepository.save(new Admin(
-                request.getNom(),
-                request.getPrenom(),
-                request.getEmail(),
-                request.getTelephone(),
-                passwordEncoder.encode(request.getMotDePasse())
-        ));
+        user.setNom(request.getNom());
+        user.setPrenom(request.getPrenom());
+        user.setEmail(request.getEmail());
+        user.setTelephone(request.getTelephone());
+        user.setMotDePasse(passwordEncoder.encode(request.getMotDePasse()));
 
-        // ✅ ROLE FIX
-        saved.setRole(Role.ADMIN);
-        adminRepository.save(saved);
-
-        return new PersonneResponse(
-                saved.getId(),
-                saved.getNom(),
-                saved.getPrenom(),
-                saved.getEmail(),
-                saved.getTelephone(),
-                saved.getRole().name(),
-                saved.isEnabled(),
-                null,
-                null,
-                null
-        );
-    }
-
-    // =========================
-    // REGISTER BIBLIOTHECAIRE
-    // =========================
-    public PersonneResponse registerBibliothecaire(PersonneRequest request) {
-
-        if (personneRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists");
-        }
-
-        Bibliothecaire saved = bibliothecaireRepository.save(new Bibliothecaire(
-                request.getNom(),
-                request.getPrenom(),
-                request.getEmail(),
-                request.getTelephone(),
-                request.getMatricule(),
-                request.getSalaire(),
-                passwordEncoder.encode(request.getMotDePasse())
-        ));
-
-        // ✅ ROLE FIX
-        saved.setRole(Role.BIBLIOTHECAIRE);
-        bibliothecaireRepository.save(saved);
-
-        return new PersonneResponse(
-                saved.getId(),
-                saved.getNom(),
-                saved.getPrenom(),
-                saved.getEmail(),
-                saved.getTelephone(),
-                saved.getRole().name(),
-                saved.isEnabled(),
-                null,
-                saved.getMatricule(),
-                saved.getSalaire()
-        );
+        return userRepository.save(user);
     }
 
     // =========================
@@ -147,24 +65,21 @@ public class AuthService {
     // =========================
     public LoginResponse login(LoginRequest request) {
 
-        Personne personne = personneRepository.findByEmail(request.getEmail())
+        User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Email not found"));
 
-        // password check
-        if (!passwordEncoder.matches(request.getMotDePasse(), personne.getMotDePasse())) {
+        if (!passwordEncoder.matches(request.getMotDePasse(), user.getMotDePasse())) {
             throw new RuntimeException("Wrong password");
         }
 
-        // ✅ CLEAN ROLE FLOW (NO instanceof)
-        String role = personne.getRole().name();
-
-        String token = jwtUtil.generateToken(personne.getEmail(), role);
+        String role = user.getRole().name();
+        String token = jwtUtils.generateToken(user.getEmail(), role);
 
         return new LoginResponse(
-                personne.getId(),
-                personne.getNom(),
-                personne.getPrenom(),
-                personne.getEmail(),
+                user.getId(),
+                user.getNom(),
+                user.getPrenom(),
+                user.getEmail(),
                 role,
                 token
         );

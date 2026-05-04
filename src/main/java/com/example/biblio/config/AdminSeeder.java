@@ -1,8 +1,8 @@
 package com.example.biblio.config;
 
-import com.example.biblio.model.Admin;
 import com.example.biblio.model.Role;
-import com.example.biblio.repository.AdminRepository;
+import com.example.biblio.model.User;
+import com.example.biblio.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,25 +12,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class AdminSeeder {
 
     @Bean
-    CommandLineRunner seedAdmin(AdminRepository adminRepository,
+    CommandLineRunner seedAdmin(UserRepository userRepository,
                                 PasswordEncoder passwordEncoder) {
 
         return args -> {
 
-            if (adminRepository.findByEmail("admin@gmail.com").isEmpty()) {
+            if (userRepository.findByEmail("admin@gmail.com").isEmpty()) {
 
-                Admin admin = new Admin(
-                        "Super",
-                        "Admin",
-                        "admin@gmail.com",
-                        "11111111",
-                        passwordEncoder.encode("123456")
-                );
-
-                // 🔥 CRITICAL FIX: set role explicitly
+                User admin = new User();
+                admin.setNom("Super");
+                admin.setPrenom("Admin");
+                admin.setEmail("admin@gmail.com");
+                admin.setTelephone("11111111");
+                admin.setMotDePasse(passwordEncoder.encode("123456"));
                 admin.setRole(Role.ADMIN);
+                admin.setEnabled(true);
 
-                adminRepository.save(admin);
+                userRepository.save(admin);
 
                 System.out.println("ADMIN SEEDED SUCCESSFULLY");
                 System.out.println("Email: admin@gmail.com");
