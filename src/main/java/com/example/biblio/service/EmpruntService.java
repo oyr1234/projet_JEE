@@ -71,5 +71,8 @@ public class EmpruntService {
     public List<Emprunt> getAll() {
         return empruntRepo.findAll();
     }
+    public List<Emprunt> getByUser(Long userId) {
+        return empruntRepo.findByUserId(userId);
+    }
 
 }
