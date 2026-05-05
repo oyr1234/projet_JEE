@@ -40,6 +40,10 @@
         public List<Emprunt> getAll() {
             return service.getAll();
         }
+        @GetMapping("/user/{userId}")
+        public List<Emprunt> getByUser(@PathVariable Long userId) {
+            return service.getByUser(userId);
+        }
 
         // Pending validation
         //@GetMapping("/pending")

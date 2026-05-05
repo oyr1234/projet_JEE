@@ -15,4 +15,5 @@ public interface EmpruntRepository extends JpaRepository<Emprunt, Long> {
     List<Emprunt> findByEnRetard(boolean enRetard);
 
     List<Emprunt> findByUser(User user);  // ← add this
+    List<Emprunt> findByUserId(Long userId);
 }
