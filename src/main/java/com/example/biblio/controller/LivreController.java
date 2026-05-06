@@ -9,7 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/livres")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "https://biblio-450e1.web.app")
 public class LivreController {
 
     private final LivreService service;

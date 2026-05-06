@@ -9,6 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@CrossOrigin(origins = "https://biblio-450e1.web.app")
 public class UserController {
 
     private final UserService userService;
