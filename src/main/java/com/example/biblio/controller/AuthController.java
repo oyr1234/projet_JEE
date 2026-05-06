@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "https://biblio-450e1.web.app")
+@CrossOrigin(origins = "https://biblio-six-fawn.vercel.app/")
 public class AuthController {
 
     private final AuthService authService;

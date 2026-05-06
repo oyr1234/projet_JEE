@@ -8,7 +8,7 @@
 
     @RestController
     @RequestMapping("/emprunts")
-    @CrossOrigin(origins = "https://biblio-450e1.web.app")
+    @CrossOrigin(origins = "https://biblio-six-fawn.vercel.app/")
     public class EmpruntController {
 
         private final EmpruntService service;
