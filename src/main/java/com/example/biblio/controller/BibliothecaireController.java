@@ -8,7 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/bibliothecaires")
-@CrossOrigin(origins = "https://biblio-six-fawn.vercel.app/")
+@CrossOrigin(origins = "http://localhost:4200/")
 public class BibliothecaireController {
 
     private final BibliothecaireService service;
