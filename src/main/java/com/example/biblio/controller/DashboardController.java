@@ -8,7 +8,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/admins/dashboard")
-@CrossOrigin(origins = "http://localhost:4200/")
+@CrossOrigin(origins = "https://biblio-six-fawn.vercel.app/")
 public class DashboardController {
 
     private final DashboardService service;

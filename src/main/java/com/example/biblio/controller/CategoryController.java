@@ -8,7 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/categories")
-@CrossOrigin(origins = "http://localhost:4200/")
+@CrossOrigin(origins = "https://biblio-six-fawn.vercel.app/")
 public class CategoryController {
 
     private final CategoryService service;
